@@ -1,21 +1,25 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts, radius } from '../theme';
-import { MoonIcon, PlusIcon, SunIcon } from './Icons';
+import { GridIcon, MoonIcon, PlusIcon, SunIcon } from './Icons';
 
 type Props = {
   bottomInset: number;
   onAdd: () => void;
   onReview: () => void;
+  onWeek: () => void;
 };
 
 // Die schwebende, dunkle Pillen-Navigation mit dem lila Plus in der Mitte.
-export default function FloatingNav({ bottomInset, onAdd, onReview }: Props) {
+export default function FloatingNav({ bottomInset, onAdd, onReview, onWeek }: Props) {
   return (
     <View style={[styles.wrap, { bottom: Math.max(bottomInset, 12) + 12 }]} accessibilityRole="tablist">
       <Pressable style={styles.active} accessibilityRole="tab" accessibilityState={{ selected: true }}>
         <SunIcon color={colors.ink} />
         <Text style={styles.activeText}>Heute</Text>
+      </Pressable>
+      <Pressable onPress={onWeek} style={styles.iconButton} accessibilityRole="tab" accessibilityLabel="Wochenübersicht">
+        <GridIcon color="#FFFFFF" />
       </Pressable>
       <Pressable
         onPress={onAdd}

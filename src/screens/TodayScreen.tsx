@@ -1,28 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { colors, fonts, radius } from '../theme';
-import {
-  FlexTask,
-  Task,
-  currentTask,
-  findGap,
-  formatTime,
-  greeting,
-  minutesNow,
-  sampleFlexTasks,
-  sampleTasks,
-  upcomingTasks,
-} from '../data/tasks';
+import { currentTask, findGap, formatTime, greeting, minutesNow, upcomingTasks } from '../data/tasks';
+import { dateKey, useTaskStore } from '../store/task-store';
 import ProgressRing from '../components/ProgressRing';
 import TaskBubble from '../components/TaskBubble';
 import FloatingNav from '../components/FloatingNav';
 import { CheckIcon, GridIcon, SparkleIcon } from '../components/Icons';
-import AddTaskSheet, { NewTask } from './AddTaskSheet';
-import { BubbleColor } from '../theme';
-
-// Neue Aufgaben bekommen der Reihe nach eine Pastellfarbe.
-const NEW_COLORS: BubbleColor[] = ['lavender', 'mint', 'peach', 'sky', 'butter'];
 
 const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 const MONTHS = ['Jan', 'Feb', 'März', 'Apr', 'Mai', 'Juni', 'Juli', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
@@ -44,92 +30,48 @@ function useClock(intervalMs = 30_000) {
 
 export default function TodayScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const date = useClock();
   const now = minutesNow(date);
+  const today = dateKey(date);
 
-  const [tasks, setTasks] = useState<Task[]>(sampleTasks);
-  const [doneIds, setDoneIds] = useState<string[]>([]);
-  const [flexTasks, setFlexTasks] = useState<FlexTask[]>(sampleFlexTasks);
+  const store = useTaskStore();
+  const tasks = store.tasksFor(today);
+  const [skippedIds, setSkippedIds] = useState<string[]>([]);
   const [laterNote, setLaterNote] = useState<string | null>(null);
   const [dayTab, setDayTab] = useState(0);
-  const [addOpen, setAddOpen] = useState(false);
-  const [colorIndex, setColorIndex] = useState(0);
 
   const current = currentTask(tasks, now);
   const next = upcomingTasks(tasks, now);
-  const currentDone = current ? doneIds.includes(current.id) : false;
+  const currentDone = current ? store.isDone(today, current.id) : false;
 
   // Was heute schon vorbei oder abgehakt ist.
-  const doneCount = tasks.filter((t) => t.end <= now || doneIds.includes(t.id)).length;
+  const doneCount = tasks.filter((t) => t.end <= now || store.isDone(today, t.id)).length;
 
-  // Freie Lücke für die nächste flexible Aufgabe, auf die nächste Viertelstunde gerundet.
-  const flex = flexTasks[0];
+  // Nächste flexible Aufgabe, die heute nicht schon zurückgestellt wurde.
+  const flex = store.flexQueue.find((f) => !skippedIds.includes(f.id));
   const nextQuarter = Math.ceil(now / 15) * 15;
   const gapStart = useMemo(
     () => (flex ? findGap(tasks, nextQuarter, flex.duration) : undefined),
     [tasks, nextQuarter, flex],
   );
 
-  const nextColor = (): BubbleColor => {
-    const c = NEW_COLORS[colorIndex % NEW_COLORS.length];
-    setColorIndex((i) => i + 1);
-    return c;
-  };
-
-  const addTask = (t: NewTask) => {
-    const id = `${Date.now()}`;
-    if (t.kind === 'flexible') {
-      // Flexible Aufgaben landen in der Warteschlange und werden in freien Lücken vorgeschlagen.
-      setFlexTasks((fs) => [...fs, { id, title: t.title, duration: t.duration }]);
-      setLaterNote(null);
-    } else {
-      setTasks((ts) => [
-        ...ts,
-        {
-          id,
-          title: t.title,
-          kind: t.kind,
-          start: t.start,
-          end: Math.min(t.start + t.duration, 24 * 60),
-          color: nextColor(),
-          icon: t.kind === 'recurring' ? 'run' : 'sparkle',
-        },
-      ]);
-    }
-    setAddOpen(false);
-  };
-
   const toggleDone = () => {
-    if (!current) return;
-    setDoneIds((ids) => (ids.includes(current.id) ? ids.filter((i) => i !== current.id) : [...ids, current.id]));
+    if (current) store.toggleDone(today, current.id);
   };
 
   const planFlex = () => {
     if (!flex || gapStart === undefined) return;
-    setTasks((ts) => [
-      ...ts,
-      {
-        id: flex.id,
-        title: flex.title,
-        kind: 'fixed',
-        start: gapStart,
-        end: gapStart + flex.duration,
-        color: 'butter',
-        icon: 'sparkle',
-      },
-    ]);
-    setFlexTasks((fs) => fs.slice(1));
+    store.planFlex(flex.id, gapStart, today);
     setLaterNote(null);
   };
 
   const skipFlex = () => {
     if (!flex) return;
-    // Für heute zurückstellen: nach hinten in die Warteschlange.
-    setFlexTasks((fs) => (fs.length > 1 ? [...fs.slice(1), fs[0]] : []));
+    store.postponeFlex(flex.id);
+    setSkippedIds((ids) => [...ids, flex.id]);
     setLaterNote(`Okay, ich erinnere dich morgen an „${flex.title}“.`);
   };
-
-  const comingSoon = (what: string) => Alert.alert(what, 'Diesen Bildschirm bauen wir als Nächstes.');
 
   // Fortschritt der aktuellen Aufgabe: wie viel der Zeit schon um ist.
   const progress = current ? (now - current.start) / (current.end - current.start) : 0;
@@ -156,7 +98,7 @@ export default function TodayScreen() {
           </View>
           <Pressable
             style={styles.roundButton}
-            onPress={() => comingSoon('Wochenübersicht')}
+            onPress={() => router.push('/week')}
             accessibilityRole="button"
             accessibilityLabel="Wochenübersicht"
           >
@@ -272,15 +214,9 @@ export default function TodayScreen() {
 
       <FloatingNav
         bottomInset={insets.bottom}
-        onAdd={() => setAddOpen(true)}
-        onReview={() => comingSoon('Abendrückblick')}
-      />
-
-      <AddTaskSheet
-        visible={addOpen}
-        suggestedStart={Math.min(nextQuarter + 60, 23 * 60)}
-        onClose={() => setAddOpen(false)}
-        onSave={addTask}
+        onAdd={() => router.push('/add')}
+        onReview={() => router.push('/review')}
+        onWeek={() => router.push('/week')}
       />
     </View>
   );

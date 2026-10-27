@@ -48,6 +48,10 @@ export default function HoldButton({ onStep, style, accessibilityLabel, children
     <Pressable
       onPressIn={start}
       onPressOut={stop}
+      // Wichtig: Sonst „klaut“ die scrollbare Seite (oder das Blatt) den Finger,
+      // sobald er sich nur minimal bewegt, und das Durchlaufen stoppt sofort.
+      cancelable={false}
+      hitSlop={8}
       style={({ pressed }) => [style, pressed && { transform: [{ scale: 0.92 }], opacity: 0.85 }]}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}

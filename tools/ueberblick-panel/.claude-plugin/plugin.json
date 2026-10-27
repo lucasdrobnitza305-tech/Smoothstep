@@ -1,0 +1,1 @@
+{ "name": "smoothstep-ueberblick", "version": "0.1.0", "description": "Übersichts-Panel neben dem Chat: was Claude gerade macht, die Schritte, Erstelltes, geänderte Dateien und Git-Erinnerung", "types": "./types/index.d.ts" }
