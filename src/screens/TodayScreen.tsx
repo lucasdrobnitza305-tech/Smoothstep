@@ -56,6 +56,8 @@ export default function TodayScreen() {
     [tasks, nextQuarter, flex],
   );
 
+  const openEdit = (id: string) => router.push({ pathname: '/add', params: { id } });
+
   const toggleDone = () => {
     if (current) store.toggleDone(today, current.id);
   };
@@ -125,7 +127,13 @@ export default function TodayScreen() {
 
         {current ? (
           <View style={styles.nowCard}>
-            <View style={styles.nowRow}>
+            <Pressable
+              onPress={() => openEdit(current.id)}
+              style={({ pressed }) => [styles.nowRow, pressed && { opacity: 0.85 }]}
+              accessibilityRole="button"
+              accessibilityLabel={`Jetzt dran: ${current.title}, bis ${formatTime(current.end)}`}
+              accessibilityHint="Zum Bearbeiten antippen"
+            >
               <ProgressRing
                 progress={currentDone ? 1 : progress}
                 top={currentDone ? 'Top' : String(remaining)}
@@ -141,7 +149,7 @@ export default function TodayScreen() {
                 </Text>
                 <Text style={styles.nowSub}>bis {formatTime(current.end)}</Text>
               </View>
-            </View>
+            </Pressable>
             <Pressable
               onPress={toggleDone}
               style={({ pressed }) => [
@@ -184,7 +192,12 @@ export default function TodayScreen() {
         <View style={styles.list}>
           {flex && gapStart !== undefined && (
             <View style={styles.suggest}>
-              <View style={styles.suggestRow}>
+              <Pressable
+                onPress={() => openEdit(flex.id)}
+                style={styles.suggestRow}
+                accessibilityRole="button"
+                accessibilityHint="Zum Bearbeiten antippen"
+              >
                 <View style={[styles.iconBlob, { backgroundColor: colors.surface }]}>
                   <SparkleIcon />
                 </View>
@@ -192,7 +205,7 @@ export default function TodayScreen() {
                   <Text style={styles.suggestSmall}>{formatTime(gapStart)} ist frei</Text>
                   <Text style={styles.suggestTitle}>{flex.title}?</Text>
                 </View>
-              </View>
+              </Pressable>
               <View style={styles.suggestActions}>
                 <Pressable onPress={planFlex} style={[styles.smallPill, { backgroundColor: colors.ink }]} accessibilityRole="button">
                   <Text style={[styles.smallPillText, { color: '#FFFFFF' }]}>Einplanen</Text>
@@ -206,7 +219,7 @@ export default function TodayScreen() {
           {laterNote && <Text style={styles.note}>{laterNote}</Text>}
 
           {next.map((t) => (
-            <TaskBubble key={t.id} task={t} />
+            <TaskBubble key={t.id} task={t} onPress={() => openEdit(t.id)} />
           ))}
           {next.length === 0 && <Text style={styles.note}>Nichts mehr geplant. Zeit für dich.</Text>}
         </View>

@@ -48,12 +48,18 @@ export default function WeekScreen() {
               </View>
               <View style={styles.chips}>
                 {tasks.map((t) => (
-                  <View key={t.id} style={[styles.chip, { backgroundColor: colors[t.color] }]}>
+                  <Pressable
+                    key={t.id}
+                    onPress={() => router.push({ pathname: '/add', params: { id: t.id, day: key } })}
+                    style={({ pressed }) => [styles.chip, { backgroundColor: colors[t.color] }, pressed && { opacity: 0.8 }]}
+                    accessibilityRole="button"
+                    accessibilityHint="Zum Bearbeiten antippen"
+                  >
                     <Text style={styles.chipTime}>{formatTime(t.start)}</Text>
                     <Text style={styles.chipText} numberOfLines={1}>
                       {t.title}
                     </Text>
-                  </View>
+                  </Pressable>
                 ))}
                 {tasks.length === 0 && <Text style={styles.free}>Frei</Text>}
               </View>
@@ -88,7 +94,7 @@ const styles = StyleSheet.create({
   dayName: { fontFamily: fonts.bold, fontSize: 19, color: colors.ink },
   count: { fontFamily: fonts.medium, fontSize: 13, color: colors.inkSoft },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: radius.pill, maxWidth: '100%' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, minHeight: 44, borderRadius: radius.pill, maxWidth: '100%' },
   chipTime: { fontFamily: fonts.semibold, fontSize: 12, color: '#3A3550' },
   chipText: { fontFamily: fonts.semibold, fontSize: 14, color: colors.ink, flexShrink: 1 },
   restart: { marginTop: 8, height: 48, borderRadius: radius.pill, borderWidth: 2, borderColor: '#CFC9DD', alignItems: 'center', justifyContent: 'center' },

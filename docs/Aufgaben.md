@@ -22,7 +22,6 @@ Jede Aufgabe bekommt einen eigenen Chat, Name nach dem Schema **Kategorie · Was
 | ⬜ | Eingebauter Wecker mit sanften Melodien | Zeit aus der Einrichtung |
 | ⬜ | Gründe im Abendrückblick speichern | Grundlage fürs Mitlernen |
 | ⬜ | Mitlernen: Vorschläge aus Mustern (max. 1 pro Tag, erst ab Muster, Ablehnen respektieren) | Regeln stehen im Konzept |
-| ⬜ | Aufgaben bearbeiten und löschen | Bisher nur anlegen |
 | ⬜ | „Morgen“ und „Diese Woche“ in der Tagesansicht befüllen | Knöpfe sind schon da |
 | ⬜ | Wochenend-Zeiten aus der Einrichtung im Plan nutzen | Werden schon gespeichert |
 | ⬜ | Wissens-Bubbles pro Tätigkeit (Sport, Kochen, Einkaufen, Schlafen) | Für später |
@@ -32,7 +31,6 @@ Jede Aufgabe bekommt einen eigenen Chat, Name nach dem Schema **Kategorie · Was
 | Status | Aufgabe | Notiz |
 | --- | --- | --- |
 | ⬜ | Expo-Schlüssel erneuern (stand im Chat) | Auf expo.dev neu erstellen, mit setx speichern. Wichtig: der alte Schlüssel ist sichtbar gewesen |
-| ⬜ | Alte Dateien löschen: App.tsx, index.ts, src/screens/AddTaskSheet.tsx | Werden nicht mehr benutzt |
 | ⬜ | Windows-Firewall einstellen, damit Expo ohne Tunnel läuft | Schneller, QR-Code bleibt gleich |
 | ⬜ | Später: Veröffentlichung im App Store / Play Store vorbereiten | Apple-Entwicklerkonto nötig |
 
@@ -62,9 +60,11 @@ Jede Aufgabe bekommt einen eigenen Chat, Name nach dem Schema **Kategorie · Was
 | Funktionen | Flexible Aufgaben werden in freie Lücken vorgeschlagen |
 | Funktionen | Abendrückblick mit Gründe-Abfrage (noch ohne Speichern) |
 | Funktionen | Wochenübersicht |
+| Funktionen | Aufgaben bearbeiten und löschen (antippen öffnet sie, Wochentage wählbar, Löschen mit Sicherheitsabfrage) |
 | Funktionen | Einrichtung beim ersten Start (Tagesrahmen, Routinen mit Wochentagen, Erinnerungsstil) |
 | Technik | Expo-Projekt mit TypeScript, läuft auf dem iPhone über Expo Go |
 | Technik | Navigation mit mehreren Bildschirmen (Expo Router) |
 | Technik | Dauerhaftes Speichern auf dem Handy |
 | Technik | Git + GitHub (privates Repository) |
 | Technik | Startdatei „SmoothStep starten.bat“ |
+| Technik | Alte Dateien gelöscht (App.tsx, index.ts, AddTaskSheet.tsx) |

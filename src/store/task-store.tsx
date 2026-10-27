@@ -15,6 +15,7 @@ export type NewTask = {
   kind: TaskKind;
   start: number; // Minuten seit Mitternacht
   duration: number; // Minuten
+  days?: number[]; // nur bei wiederkehrenden: Wochentage (0 = So … 6 = Sa); leer/fehlend = jeden Tag
 };
 
 // Eine selbst angelegte Aufgabe. Feste Termine gelten für einen Tag, wiederkehrende jeden Tag.
@@ -78,6 +79,12 @@ function weekdayOf(day: string): number {
   return new Date(y, m - 1, d).getDay();
 }
 
+// Alle 7 Tage gewählt heißt „jeden Tag“ – das speichern wir einfach ohne Liste.
+function everyDayAsEmpty(days?: number[]): number[] | undefined {
+  if (!days || days.length === 0 || days.length === 7) return undefined;
+  return [...days].sort((a, b) => a - b);
+}
+
 export function dateKey(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -92,6 +99,9 @@ type Store = {
   isDone: (day: string, id: string) => boolean;
   toggleDone: (day: string, id: string) => void;
   addTask: (t: NewTask, day: string) => void;
+  getTask: (id: string) => NewTask | undefined;
+  updateTask: (id: string, t: NewTask, day: string) => void;
+  deleteTask: (id: string) => void;
   planFlex: (flexId: string, start: number, day: string) => void;
   postponeFlex: (flexId: string) => void;
   resetAll: () => void;
@@ -190,8 +200,60 @@ export function TaskStoreProvider({ children }: { children: React.ReactNode }) {
         color,
         icon,
         date: t.kind === 'fixed' ? day : undefined,
+        days: t.kind === 'recurring' ? everyDayAsEmpty(t.days) : undefined,
       };
       return { ...s, tasks: [...s.tasks, task], colorIndex: s.colorIndex + 1 };
+    });
+  }, []);
+
+  // Eine bestehende Aufgabe so zurückgeben, wie der Anlegen-Bildschirm sie braucht.
+  const getTask = useCallback(
+    (id: string): NewTask | undefined => {
+      const t = state.tasks.find((x) => x.id === id);
+      if (t) return { title: t.title, kind: t.kind, start: t.start, duration: t.end - t.start, days: t.days };
+      const f = state.flex.find((x) => x.id === id);
+      if (f) return { title: f.title, kind: 'flexible', start: 0, duration: f.duration };
+      return undefined;
+    },
+    [state.tasks, state.flex],
+  );
+
+  // Aufgabe ändern. Wechselt die Art zwischen flexibel und fest/wiederkehrend, zieht sie in die andere Liste um.
+  const updateTask = useCallback((id: string, t: NewTask, day: string) => {
+    setState((s) => {
+      const old = s.tasks.find((x) => x.id === id);
+      const oldFlex = s.flex.find((x) => x.id === id);
+      if (!old && !oldFlex) return s;
+      if (t.kind === 'flexible') {
+        // Bleibt an derselben Stelle der Warteschlange, wenn sie schon flexibel war.
+        const item: FlexTask = { id, title: t.title, duration: t.duration };
+        const flex = oldFlex ? s.flex.map((x) => (x.id === id ? item : x)) : [...s.flex, item];
+        return { ...s, tasks: s.tasks.filter((x) => x.id !== id), flex };
+      }
+      const colorIndex = old ? s.colorIndex : s.colorIndex + 1;
+      const task: SavedTask = {
+        id,
+        title: t.title,
+        kind: t.kind,
+        start: t.start,
+        end: Math.min(t.start + t.duration, 24 * 60),
+        color: old ? old.color : NEW_COLORS[s.colorIndex % NEW_COLORS.length],
+        icon: old ? old.icon : t.kind === 'recurring' ? 'run' : 'sparkle',
+        // Ein fester Termin behält seinen Tag; wird eine Aufgabe neu fest, gilt sie für den gewählten Tag.
+        date: t.kind === 'fixed' ? (old?.kind === 'fixed' ? old.date : day) : undefined,
+        days: t.kind === 'recurring' ? everyDayAsEmpty(t.days) : undefined,
+      };
+      const tasks = old ? s.tasks.map((x) => (x.id === id ? task : x)) : [...s.tasks, task];
+      return { ...s, tasks, flex: s.flex.filter((x) => x.id !== id), colorIndex };
+    });
+  }, []);
+
+  // Aufgabe ganz entfernen, auch aus den Abgehakt-Listen.
+  const deleteTask = useCallback((id: string) => {
+    setState((s) => {
+      const done: Record<string, string[]> = {};
+      for (const [day, ids] of Object.entries(s.done)) done[day] = ids.filter((x) => x !== id);
+      return { ...s, tasks: s.tasks.filter((x) => x.id !== id), flex: s.flex.filter((x) => x.id !== id), done };
     });
   }, []);
 
@@ -235,11 +297,14 @@ export function TaskStoreProvider({ children }: { children: React.ReactNode }) {
       isDone,
       toggleDone,
       addTask,
+      getTask,
+      updateTask,
+      deleteTask,
       planFlex,
       postponeFlex,
       resetAll,
     }),
-    [ready, state.profile, completeSetup, restartSetup, tasksFor, state.flex, isDone, toggleDone, addTask, planFlex, postponeFlex, resetAll],
+    [ready, state.profile, completeSetup, restartSetup, tasksFor, state.flex, isDone, toggleDone, addTask, getTask, updateTask, deleteTask, planFlex, postponeFlex, resetAll],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

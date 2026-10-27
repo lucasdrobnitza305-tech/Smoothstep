@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts, radius } from '../theme';
 import { IconName, Task, formatTime } from '../data/tasks';
 import { BagIcon, MoonIcon, RunIcon, SparkleIcon, SunIcon } from './Icons';
@@ -20,10 +20,16 @@ export function TaskIcon({ name }: { name: IconName }) {
   }
 }
 
-// Eine weiße, pillenförmige Zeile für eine kommende Aufgabe.
-export default function TaskBubble({ task }: { task: Task }) {
+// Eine weiße, pillenförmige Zeile für eine kommende Aufgabe. Antippen öffnet sie zum Bearbeiten.
+export default function TaskBubble({ task, onPress }: { task: Task; onPress?: () => void }) {
   return (
-    <View style={styles.row} accessible accessibilityLabel={`${task.title} um ${formatTime(task.start)}`}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, pressed && { opacity: 0.85 }]}
+      accessibilityRole="button"
+      accessibilityLabel={`${task.title} um ${formatTime(task.start)}`}
+      accessibilityHint="Zum Bearbeiten antippen"
+    >
       <View style={[styles.iconBlob, { backgroundColor: colors[task.color] }]}>
         <TaskIcon name={task.icon} />
       </View>
@@ -33,7 +39,7 @@ export default function TaskBubble({ task }: { task: Task }) {
       <View style={styles.timeChip}>
         <Text style={styles.time}>{formatTime(task.start)}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
