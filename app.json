@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "smoothstep",
+    "name": "SmoothStep",
     "slug": "smoothstep",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,7 +22,9 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      "expo-router"
+    ],
+    "scheme": "smoothstep"
   }
 }

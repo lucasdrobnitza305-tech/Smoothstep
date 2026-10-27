@@ -11,6 +11,7 @@ export type Task = {
   end: number;
   color: BubbleColor;
   icon: IconName;
+  days?: number[]; // nur bei wiederkehrenden: an welchen Wochentagen (0 = So … 6 = Sa); leer/fehlend = jeden Tag
 };
 
 // Flexible Aufgabe ohne feste Uhrzeit – die App schlägt sie in freien Lücken vor.
