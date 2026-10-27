@@ -40,6 +40,41 @@ function fileName(path: string): string {
   return parts[parts.length - 1] || path
 }
 
+// Pfad relativ zum Projektordner, oder undefined, wenn die Datei nicht ins Projekt-Git gehört
+function inProject(path: string, cwd: string): string | undefined {
+  const norm = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '')
+  const file = norm(path)
+  const root = norm(cwd)
+  if (!file.toLowerCase().startsWith(root.toLowerCase() + '/')) return undefined
+  const rel = file.slice(root.length + 1)
+  if (/^(node_modules|\.expo|\.git)\//.test(rel)) return undefined
+  return rel
+}
+
+// Die Aufgabenliste der Desktop-App (update_plan) in unsere Schritte übersetzen
+function applyPlan(list: Step[], input: Record<string, unknown>): Step[] {
+  if (Array.isArray(input.items)) {
+    return (input.items as Array<Record<string, unknown>>).map((item, i) => ({
+      id: String(i + 1),
+      title: String(item.content ?? 'Schritt'),
+      status: item.status === 'in_progress' || item.status === 'completed' ? item.status : 'pending',
+    }))
+  }
+  let next = list
+  const set = (nr: number, status: Step['status']) => {
+    next = next.map((s, i) => (i === nr - 1 ? { ...s, status } : s))
+  }
+  if (Array.isArray(input.done)) for (const nr of input.done) if (typeof nr === 'number') set(nr, 'completed')
+  if (typeof input.start === 'number') set(input.start, 'in_progress')
+  if (input.advance === true) {
+    const cur = next.findIndex(s => s.status === 'in_progress')
+    if (cur >= 0) set(cur + 1, 'completed')
+    const pending = next.findIndex(s => s.status === 'pending')
+    if (pending >= 0) set(pending + 1, 'in_progress')
+  }
+  return next
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'ueberblick', description: 'Öffnet das SmoothStep-Überblick-Panel' })
@@ -106,6 +141,26 @@ export const register: Register = on => {
         const title = typeof input.title === 'string' ? input.title : fileName(path).replace(/\.(html|md)$/, '') || 'Seite'
         await update($, made, list => [{ title, url }, ...list.filter(m => m.url !== url)].slice(0, 8))
       }
+    }
+
+    if (ok && tool === 'mcp__ccd_turn__update_plan') {
+      await update($, steps, list => applyPlan(list, input))
+    }
+
+    // wrap_up hakt die Aufgabenliste der App ab
+    if (ok && tool === 'mcp__ccd_turn__wrap_up') {
+      await update($, steps, list => list.map(s => ({ ...s, status: 'completed' as const })))
+    }
+
+    if (ok && (tool === 'Write' || tool === 'Edit' || tool === 'NotebookEdit')) {
+      const path = String(input.file_path ?? input.notebook_path ?? '')
+      const rel = path ? inProject(path, await $.session.cwd()) : undefined
+      if (rel) await update($, changed, list => [...new Set([...list, rel])].slice(-40))
+    }
+
+    // Nach einem erfolgreichen git commit ist alles gesichert
+    if (ok && tool === 'Bash' && /\bgit\s+commit\b/.test(String(input.command ?? ''))) {
+      await update($, changed, () => [])
     }
 
     if (ok && tool.includes('device_commit_files')) {
