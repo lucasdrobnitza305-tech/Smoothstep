@@ -21,7 +21,10 @@ Der Besitzer ist Programmier-Einsteiger: Erkläre Schritte einfach, auf Deutsch,
 - Alles, was gespeichert wird, läuft über `src/store/task-store.tsx`.
 - Farben und Schrift nur aus `src/theme.ts`, keine neuen Farbwerte quer im Code verteilen.
 - Kleine Schritte: eine Aufgabe → testen lassen → Feedback → weiter.
-- Nach jeder funktionierenden Änderung an `git add / commit / push` erinnern und die Befehle mitgeben.
+- Selbst erledigen statt Befehle zum Abtippen geben: Typen prüfen, Pakete installieren, App-Server starten usw. führt Claude selbst aus. Was absehbar als Nächstes nötig ist, gleich mit übernehmen.
+- Sobald der Besitzer bestätigt, dass eine Änderung auf dem iPhone funktioniert, selbst `git add / commit / push` ausführen und kurz sagen, was gesichert wurde.
+- Selbst machen muss der Besitzer nur, was Claude nicht kann (iPhone testen, QR-Code scannen, auf GitHub klicken). Das klar und Schritt für Schritt sagen.
+- Eine Aufgabe = ein eigener Chat. Taucht nebenbei eine neue, eigenständige Aufgabe auf, dafür einen eigenen Chat vorschlagen.
 - Keine geschützten Figuren, Logos oder Marken nachbauen.
 
 ## Agents
