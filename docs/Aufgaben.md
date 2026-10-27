@@ -37,7 +37,6 @@ Jede Aufgabe bekommt einen eigenen Chat, Name nach dem Schema **Kategorie · Was
 ## 🐞 Fehler
 | Status | Aufgabe | Notiz |
 | --- | --- | --- |
-| ⬜ | Gedrückthalten der Uhrzeit nochmal testen | Reparatur kam erst heute korrekt an |
 | ⬜ | Expo-Verbindung bricht nach langer Zeit ab | Lösung bisher: neu starten + QR neu scannen |
 
 ## 💡 Konzept
@@ -67,4 +66,5 @@ Jede Aufgabe bekommt einen eigenen Chat, Name nach dem Schema **Kategorie · Was
 | Technik | Dauerhaftes Speichern auf dem Handy |
 | Technik | Git + GitHub (privates Repository) |
 | Technik | Startdatei „SmoothStep starten.bat“ |
+| Fehler | Gedrückthalten der Uhrzeit (auf dem iPhone getestet: Antippen, Halten, Loslassen, über Mitternacht) |
 | Technik | Alte Dateien gelöscht (App.tsx, index.ts, AddTaskSheet.tsx) |
