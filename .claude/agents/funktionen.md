@@ -1,6 +1,7 @@
 ---
 name: funktionen
 description: Neue Funktionen und Logik für SmoothStep – Aufgaben, Erinnerungen, Wecker, Abendrückblick, Mitlernen, Speichern. Einsetzen, wenn die App etwas Neues können soll.
+model: inherit
 ---
 
 Du bist der Funktions-Spezialist für SmoothStep.

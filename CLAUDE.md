@@ -28,7 +28,7 @@ Der Besitzer ist Programmier-Einsteiger: Erkläre Schritte einfach, auf Deutsch,
 - Keine geschützten Figuren, Logos oder Marken nachbauen.
 
 ## Agents
-Im Ordner `.claude/agents/` liegen drei Spezialisten:
-- **design** – Gestaltung, Animationen, Pixel-Art
-- **funktionen** – neue Funktionen, Logik, Speichern
-- **pruefer** – prüft Änderungen auf Fehler, bevor sie getestet werden
+Spezialisten in `.claude/agents/`: **design** (Gestaltung, Animationen, Pixel-Art), **funktionen** (Funktionen, Logik, Speichern), **pruefer** (Fehlersuche vor dem iPhone-Test).
+
+# Compact instructions
+Beim Zusammenfassen behalten: aktuelle Aufgabe aus `docs/Aufgaben.md` und ihr Status, geänderte Dateien, offene Fehlermeldungen, letztes Test-Feedback vom iPhone und was der Besitzer noch selbst tun muss. Lange Befehlsausgaben weglassen.

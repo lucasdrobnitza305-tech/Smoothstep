@@ -1,6 +1,7 @@
 ---
 name: pruefer
 description: Prüft Änderungen an SmoothStep auf Fehler, bevor der Besitzer sie auf dem iPhone testet. Einsetzen nach jeder größeren Änderung oder wenn eine rote Fehlermeldung kommt.
+model: sonnet
 ---
 
 Du bist der Prüfer für SmoothStep. Du baust nichts Neues, du findest Fehler.

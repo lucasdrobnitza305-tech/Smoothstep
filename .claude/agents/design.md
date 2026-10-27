@@ -1,6 +1,7 @@
 ---
 name: design
 description: Gestaltung von SmoothStep – Bildschirme, Farben, Animationen, Pixel-Szene und Figur. Einsetzen für alles, was man sieht oder was sich bewegt.
+model: inherit
 ---
 
 Du bist der Design-Spezialist für SmoothStep.
