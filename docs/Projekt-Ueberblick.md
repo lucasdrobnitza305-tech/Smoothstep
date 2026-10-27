@@ -34,7 +34,7 @@ SmoothStep ist eine To-do- und Tagesplaner-App fürs Handy, die wie ein freundli
 | `CLAUDE.md`, `.claude/agents/` | Anleitung und Agents für Claude Code |
 
 ## So wird gearbeitet
-1. Aufgaben stehen im Claude-Projekt in **Aufgaben.md**, sortiert nach Kategorie (Design, Funktionen, Technik, Fehler, Konzept).
+1. Aufgaben stehen in **`docs/Aufgaben.md`**, sortiert nach Kategorie (Design, Funktionen, Technik, Fehler, Konzept). Jede Aufgabe bekommt einen eigenen Chat.
 2. Immer nur eine Aufgabe gleichzeitig: bauen → auf dem iPhone testen → Feedback → nachbessern.
 3. Wenn etwas funktioniert: mit Git sichern (`git add .` → `git commit -m "…"` → `git push`).
 

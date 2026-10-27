@@ -6,7 +6,7 @@ Der Besitzer ist Programmier-Einsteiger: Erkläre Schritte einfach, auf Deutsch,
 ## Wichtige Dokumente
 - `docs/Projekt-Ueberblick.md` – worum es geht, Kernideen, Ordnerstruktur
 - `docs/Design-Richtlinien.md` – Farben, Schrift, Formen, Pixel-Stil, Figur (verbindlich für alles Visuelle)
-- Aufgabenliste: liegt im Claude-Projekt „Erstideen zur App“ (`SmoothStep/Aufgaben.md`)
+- `docs/Aufgaben.md` – die Aufgabenliste. Zu Beginn jedes Chats lesen; Status pflegen (🔧 beim Start, nach bestätigtem Test nach „Erledigt“ verschieben), neue Aufgaben in der passenden Kategorie ergänzen
 
 ## Befehle
 - App starten: `npx expo start --tunnel` (oder Doppelklick auf `SmoothStep starten.bat`), QR-Code mit dem iPhone scannen
